@@ -70,7 +70,8 @@ while(1)
 	USART_Transmit(' ');
 //	frequency=freq(frequency,PINC,1,4,3,1);
 //	*frequency[0]=0;
-	freq(frequency,&PINC,1,4,3,1);
+	//Массив
+	freq(frequency,&PINC,3,3);
 	for (i=0;i<=7;i++)
 	{
 		if (*frequency[i]>0)
@@ -81,13 +82,19 @@ while(1)
 			USART_Transmit(' ');
 		}
 	}
+
 /*
-	i=freq(4,3,1);
+	i=freq(&PINC,2,2);
 	if (i>0)
-	itoa(i,str,10);*/
-/*
+	itoa(i,str,10);
 	USART_Transmit(str[0]);
-	USART_Transmit(str[1]);*/
+	USART_Transmit(str[1]);
+	i=freq(&PINC,1,1);
+	if (i>0)
+	itoa(i,str,10);
+	USART_Transmit(str[0]);
+	USART_Transmit(str[1]);
+*/
 //	if (counter = 1) USART_Transmit('[');
 }
 }
@@ -99,7 +106,7 @@ int main(void)
 	PORTC = 1;	
 	USART_Init(MYUBRR);
 	
-	setup_TC1();
+	setup_TC1(4);
     /* Replace with your application code */
 	loop();
 }
