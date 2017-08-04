@@ -1,25 +1,25 @@
-/*Подсчет импульсов на заданной ножке с использованием таймера/счетчика TC1*/
-/*git22*/
+п»ї/*РџРѕРґСЃС‡РµС‚ РёРјРїСѓР»СЊСЃРѕРІ РЅР° Р·Р°РґР°РЅРЅРѕР№ РЅРѕР¶РєРµ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј С‚Р°Р№РјРµСЂР°/СЃС‡РµС‚С‡РёРєР° TC1*/
+
 #pragma once
 
 #include <avr/interrupt.h>
 
-#define	PORT_Freq	PINC		//Порт вентилятора
-#define	PIN_Freq	1			//Порт вентилятора
+#define	PIN_Freq	1		//РџРѕСЂС‚ РІРµРЅС‚РёР»СЏС‚РѕСЂР°
+#define	PORT_Freq	PINC		//РџРѕСЂС‚ РІРµРЅС‚РёР»СЏС‚РѕСЂР°
 
 volatile unsigned int g_seconds = 0;
 
-//Настройка на подсчет секунд глобальной переменной g_seconds
+//РќР°СЃС‚СЂРѕР№РєР° РЅР° РїРѕРґСЃС‡РµС‚ СЃРµРєСѓРЅРґ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ g_seconds
 void setup_TC1() {
-	TCCR1A = 0;				//Настройка таймера 1, канала А
-	TCCR1B = 0x5;			//Предделитель CLK/1024;
-	OCR1A = 0x3D09;			//Прерывание раз в секунду на частоте 16MГц
-	TIMSK1 = 0x2;			//Запуск таймера по совпадению 1А
-	sei();					//Разрешаем прерывания (запрещаем: cli(); )
+	TCCR1A = 0;			//РќР°СЃС‚СЂРѕР№РєР° С‚Р°Р№РјРµСЂР° 1, РєР°РЅР°Р»Р° Рђ
+	TCCR1B = 0x5;			//РџСЂРµРґРґРµР»РёС‚РµР»СЊ CLK/1024;
+	OCR1A = 0x3D09;			//РџСЂРµСЂС‹РІР°РЅРёРµ СЂР°Р· РІ СЃРµРєСѓРЅРґСѓ РЅР° С‡Р°СЃС‚РѕС‚Рµ 16MР“С†
+	TIMSK1 = 0x2;			//Р—Р°РїСѓСЃРє С‚Р°Р№РјРµСЂР° РїРѕ СЃРѕРІРїР°РґРµРЅРёСЋ 1Рђ
+	sei();				//Р Р°Р·СЂРµС€Р°РµРј РїСЂРµСЂС‹РІР°РЅРёСЏ (Р·Р°РїСЂРµС‰Р°РµРј: cli(); )
 }
 
-//Обработчик прерывания по совпадению 1А
-//Счетчик времени
+//РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ РїРѕ СЃРѕРІРїР°РґРµРЅРёСЋ 1Рђ
+//РЎС‡РµС‚С‡РёРє РІСЂРµРјРµРЅРё
 ISR(TIMER1_COMPA_vect)
 {
   if (g_seconds > 2) 
@@ -30,32 +30,28 @@ ISR(TIMER1_COMPA_vect)
   {
     g_seconds++;
   }  
-  TCNT1 = 0;		//Обнуление регистра счетчика TCNT1
+  TCNT1 = 0;		//РћР±РЅСѓР»РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° СЃС‡РµС‚С‡РёРєР° TCNT1
 }
 
-//Замер импульсов на порте PORT_Freq и ножке PIN_Freq с периодом
-int freq(unsigned int period, unsigned int time_start, unsigned int time_metering)		//period - период замера импульсов в секундах, time_start - время начала замера, time_metering - длительность замера
+//Р—Р°РјРµСЂ РёРјРїСѓР»СЊСЃРѕРІ РЅР° РїРѕСЂС‚Рµ PORT_Freq Рё РЅРѕР¶РєРµ PIN_Freq СЃ РїРµСЂРёРѕРґРѕРј
+int freq(unsigned int period, unsigned int time_start, unsigned int time_metering)		//period - РїРµСЂРёРѕРґ Р·Р°РјРµСЂР° РёРјРїСѓР»СЊСЃРѕРІ РІ СЃРµРєСѓРЅРґР°С…, time_start - РІСЂРµРјСЏ РЅР°С‡Р°Р»Р° Р·Р°РјРµСЂР°, time_metering - РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ Р·Р°РјРµСЂР°
 {
 	int frequency=0;
 	int prev=0, real=0;
 	while ((g_seconds >= time_start ) &(g_seconds <= time_start + time_metering))
 	{
+		real = (PORT_Freq & PIN_Freq);
+		if (real != prev)
 		{
-			real = (PORT_Freq & PIN_Freq);
-			if (real != prev)
-			{
-				frequency++;
-				//USART_Transmit('/');
-				//Serial.println('*');
-			}
-			prev = real;
+			frequency++;
 		}
+		prev = real;
 	}
 	return (int)frequency/2;
 }
 
-//Мгновенный замер импульсов на порте PORT_Freq и ножке PIN_Freq 
-int freq(unsigned int time_metering)		 //time_metering - длительность замера
+//РњРіРЅРѕРІРµРЅРЅС‹Р№ Р·Р°РјРµСЂ РёРјРїСѓР»СЊСЃРѕРІ РЅР° РїРѕСЂС‚Рµ PORT_Freq Рё РЅРѕР¶РєРµ PIN_Freq 
+int freq(unsigned int time_metering)		 //time_metering - РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ Р·Р°РјРµСЂР°
 {
 	g_seconds = 0;
 	TCNT1 = 0;
@@ -63,14 +59,45 @@ int freq(unsigned int time_metering)		 //time_metering - длительность замера
 	int prev=0, real=0;
 	while (g_seconds < time_metering)
 	{
+		real = (PORT_Freq & PIN_Freq);
+		if (real != prev)
 		{
-			real = (PORT_Freq & PIN_Freq);
-			if (real != prev)
-			{
-				frequency++;
-			}
-			prev = real;
+			frequency++;
 		}
+		prev = real;
 	}
 	return (int)frequency/2;
+}
+
+void freq(int* frequency[],volatile uint8_t *PORT_name, uint8_t PINS_freq, unsigned int period, unsigned int time_start, unsigned int time_metering)
+{
+//	int frequency[8]={0,};
+	int prev[8]={0,};
+	int real[8]={0,};
+	int i=0;
+	while ((g_seconds >= time_start ) &(g_seconds <= time_start + time_metering))
+	{
+		for (i=0;i<=7;i++)
+		{
+			if ((PINS_freq<<i)& 1)
+			{
+				real[i] = (*PORT_name & (i+1));
+				if (real[i] != prev[i])
+				{
+					*frequency[i]=*frequency[i]+1;
+				}
+				prev[i] = real[i];
+			}
+		}
+	}
+/*
+	for (i=0;i<=7;i++)
+	{
+		*frequency[i]=i+10;
+		*frequency[i]=(int)*frequency[i]/2;
+	}
+*/
+
+
+//	return frequency;
 }

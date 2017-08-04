@@ -6,9 +6,10 @@
  */ 
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <stdlib.h>
 #include "frequency.h"
+
+//#define	PORT_Freq	PINC		//Порт вентилятора
 
 #define FOSC 16000000 // Clock Speed
 #define BAUD 9600
@@ -54,16 +55,39 @@ void setup() {
 void loop() {
 	int i;	
 	char str[8];
+//	int *frequency=new int[8];
+	int *frequency[8];
+	int mass[8]={0,0,0,0,0,0,0,0};
+	for (i=0;i<=7;i++)
+	{
+		frequency[i]=&mass[i];
+	}
 while(1)
 {
+//	i=0;
+	
 //	freq(4,3,1);
 	USART_Transmit(' ');
+//	frequency=freq(frequency,PINC,1,4,3,1);
+//	*frequency[0]=0;
+	freq(frequency,&PINC,1,4,3,1);
+	for (i=0;i<=7;i++)
+	{
+		if (*frequency[i]>0)
+		{
+			itoa(*frequency[i],str,10);
+			USART_Transmit(str[0]);
+			USART_Transmit(str[1]);
+			USART_Transmit(' ');
+		}
+	}
+/*
 	i=freq(4,3,1);
 	if (i>0)
-
-	itoa(i,str,10);
+	itoa(i,str,10);*/
+/*
 	USART_Transmit(str[0]);
-	USART_Transmit(str[1]);
+	USART_Transmit(str[1]);*/
 //	if (counter = 1) USART_Transmit('[');
 }
 }
