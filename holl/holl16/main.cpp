@@ -14,9 +14,7 @@
 #define FOSC 16000000 // Clock Speed
 #define BAUD 9600
 #define MYUBRR ((FOSC/16/BAUD)-1)
-
-
-
+#define PINC (&PINC)
 
 void USART_Init( unsigned int ubrr)
 {
@@ -73,7 +71,6 @@ while(1)
 	USART_Transmit(' ');
 //	frequency=freq(frequency,PINC,1,4,3,1);
 //	*frequency[0]=0;
-/*
 	//Массив
 	freq(frequency,&PINC,3,3);
 	for (i=0;i<=7;i++)
@@ -86,20 +83,6 @@ while(1)
 			USART_Transmit(' ');
 		}
 	}
-*/
-
-//DEFINE
-for (i=0;i<=3;i++)
-{
-	freq(frequency,3,1);
-	if (*frequency[i]>0)
-	{
-		itoa(*frequency[i],str,10);
-		USART_Transmit(str[0]);
-		USART_Transmit(str[1]);
-		USART_Transmit(' ');
-	}
-}
 
 /*
 	i=freq(&PINC,2,2);
