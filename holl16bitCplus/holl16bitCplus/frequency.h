@@ -186,10 +186,11 @@ void freq(int* frequency[], volatile uint8_t *PORT_name, uint8_t PINS_freq, unsi
 */
 
 
-//мгновенный замер импульсов на портах PORT1_freq, PORT2_freq, PORT3_freq, PORT4_freq
+//Счетчик импульсов на портах PORT1_freq, PORT2_freq, PORT3_freq, PORT4_freq
 // и ножках PIN1_freq, PIN2_freq, PIN3_freq, PIN4_freq
 //time_metering - длительность замера
-//Выводит импульсы в массив по указателю *frequency соответственно ножкам порта (*frequency[0]=PINx0, *frequency[0]=PINx1,...)
+//Выводит количество подсчитаных за время time_metering импульсов
+// в массив по указателю *frequency соответственно ножкам порта (*frequency[0]=PINx0, *frequency[0]=PINx1,...)
 void freq(int* frequency[], unsigned int time_start, unsigned int time_metering)
 {
 	int prev[4]={1,};
@@ -244,17 +245,18 @@ void freq(int* frequency[], unsigned int time_start, unsigned int time_metering)
 	{
 		for (i=0;i<=3;i++)
 		{
-			*frequency[i]=(int)((*frequency[i])/2/time_metering);
+			*frequency[i]=(int)((*frequency[i])/2);
 		}
 	}
 	
 }
 
 
-//Счетчик импульсов на портах PORT1_freq, PORT2_freq, PORT3_freq, PORT4_freq
+//Мгновенный замер импульсов на портах PORT1_freq, PORT2_freq, PORT3_freq, PORT4_freq
 // и ножках PIN1_freq, PIN2_freq, PIN3_freq, PIN4_freq
 //time_start - время начала замера, time_metering - длительность замера
-//Выводит импульсы в массив по указателю *frequency соответственно ножкам порта (*frequency[0]=PINx0, *frequency[0]=PINx1,...)
+//Выводит количество подсчитаных за время time_metering
+// в массив по указателю *frequency соответственно ножкам порта (*frequency[0]=PINx0, *frequency[0]=PINx1,...)
 void freq(int* frequency[], unsigned int time_metering)
 {
 	g_seconds = 0;
@@ -311,7 +313,7 @@ void freq(int* frequency[], unsigned int time_metering)
 	{
 		for (i=0;i<=3;i++)
 		{
-			*frequency[i]=(int)((*frequency[i])/2/time_metering);
+			*frequency[i]=(int)((*frequency[i])/2);
 		}
 	}
 	
